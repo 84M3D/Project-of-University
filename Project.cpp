@@ -6,6 +6,7 @@
 
 using namespace std;
 
+fstream openFile(const string& mode);
 float avgGrade(string line);
 void addStudent();
 void addCourse();
@@ -55,13 +56,20 @@ int main(){
     }
 }
 
-void addStudent(){
+fstream openFile(const string& mode) {
     fstream students;
-    students.open("students.txt",ios::app);
-    if(!students){
+    ios_base::openmode fileMode=(mode == "in") ? ios::in : ios::app;
+    students.open("students.txt", fileMode);
+    if (!students) {
         cout<<"\nError!.\nFile doesn't exist.";
-        return;
+        exit(1);
     }
+    return students;
+}
+
+void addStudent(){
+    fstream students = openFile("out");
+
   string fullName,studentID,major;
   cout<<"Enter the Full Name of The student:";
   cin.ignore();
@@ -101,12 +109,8 @@ void addStudent(){
 }
 
 void addCourse(){
-    fstream students;
-    students.open("students.txt",ios::app);
-    if(!students){
-        cout<<"\nError!.\nFile doesn't exist.";
-        return;
-    }
+    fstream students = openFile("out");
+
     string courseTitle;
     int courseCredit;
     float Grade;
@@ -121,12 +125,7 @@ void addCourse(){
 }
 
 void AcademicRecord(){
-    fstream students;
-    students.open("students.txt",ios::in); 
-    if(!students){
-        cout<<"\nError!.\nFile doesn't exist.";
-        return;
-    }
+    fstream students = openFile("in");
     while(true){
         cout<<"\nGive one of the following information about the student.\nChoose one !\n";
         cout<<"1.Name of student.\n";
@@ -207,12 +206,8 @@ float avgGrade(string line){
 }
 
 void searchStudents(int searchType , bool reportMode){
-     ifstream students;
-    students.open("students.txt",ios::in);
-    if(!students){
-        cout<<"\nError!.\nFile doesn't exist.";
-        return;
-    }
+    fstream students = openFile("in");
+
     string whatWeWant,type=(searchType==1)? "ID":"Name";
     cout<<"Please enter the "<<type<<" of Student:";
     cin.ignore();
@@ -309,12 +304,7 @@ void sort(vector<string> &sortline ,int count){
 }
 
 void sortbyGrade(){
-    ifstream students;
-    students.open("students.txt",ios::in);
-    if(!students){
-        cout<<"\nError!.\nFile doesn't exist.";
-        return;
-        }
+    fstream students = openFile("in");
 
     vector<string> sortline;
     string line;
@@ -330,12 +320,8 @@ void sortbyGrade(){
 }
 
 void sortbyMajor(){
-      ifstream students;
-    students.open("students.txt",ios::in);
-    if(!students){
-        cout<<"\nError!.\nFile doesn't exist.";
-        return;
-        } 
+      fstream students = openFile("in");
+
     cout<<"Enter the name of the Major you want to search for:";
     string major,s="";
     cin.ignore();

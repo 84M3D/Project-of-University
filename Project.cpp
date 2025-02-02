@@ -4,16 +4,13 @@
 #include <sstream>
 #include<vector>
 
-bool Record=false;
-
 using namespace std;
 
 float avgGrade(string line);
 void addStudent();
 void addCourse();
 void AcademicRecord();
-void searchbyName();
-void searchbyID();
+void searchStudents(int searchType ,bool reportMode);
 void listAllStudents();
 void AcademicRecord_score(string line);
 void sortbyGrade();
@@ -42,9 +39,9 @@ int main(){
     switch(choice){
         case 1: addStudent();
             break;
-        case 2: searchbyName();
+        case 2: searchStudents(1,false);
             break;
-        case 3: searchbyID();
+        case 3: searchStudents(2,false);
             break;
         case 4: listAllStudents();
             break;
@@ -124,9 +121,12 @@ void addCourse(){
 }
 
 void AcademicRecord(){
-    
     fstream students;
-    students.open("students.txt",ios::app); 
+    students.open("students.txt",ios::in); 
+    if(!students){
+        cout<<"\nError!.\nFile doesn't exist.";
+        return;
+    }
     while(true){
         cout<<"\nGive one of the following information about the student.\nChoose one !\n";
         cout<<"1.Name of student.\n";
@@ -135,22 +135,20 @@ void AcademicRecord(){
         cout<<"Your choice:";
         int choice;
         cin>>choice;
+
         if(cin.fail()){
         cin.clear();
         cin.ignore();
         cout<<"\nError(Invalid choice)!\nPlease try again.\n";
         continue;
         }
+
         switch(choice){
-            case 1: Record=true;
-            searchbyName();
-            Record=false;
+            case 1:  searchStudents(1,true);
                 break;
-            case 2: Record=true;
-            searchbyID();
-            Record=false;
+            case 2:  searchStudents(2,true);
                 break;
-            case 3:
+            case 3: students.close();
                 return;
             default: cout<<"\nError(Invalid choice)!\nPlease try again.\n";
                 break;
@@ -208,65 +206,37 @@ float avgGrade(string line){
 
 }
 
-void searchbyName(){
-    ifstream students;
-    students.open("students.txt");
+void searchStudents(int searchType , bool reportMode){
+     ifstream students;
+    students.open("students.txt",ios::in);
     if(!students){
         cout<<"\nError!.\nFile doesn't exist.";
         return;
     }
-    string nameToSearch,line;
-    cout<<"Enter Name to search:";
+    string whatWeWant,type=(searchType==1)? "ID":"Name";
+    cout<<"Please enter the "<<type<<" of Student:";
     cin.ignore();
-    getline(cin,nameToSearch);
-    bool flag=false;
+    getline(cin,whatWeWant);
+
+    string line;
+    bool found=false;
     while(getline(students,line)){
-        int i=1;
-        string  fullName="";
-        while(line[i]!='@'){
-            fullName+=line[i];
-            i++;
-        }
-        if(fullName==nameToSearch){
-            flag=true;
+        int i=line.find('@');
+        int j=line.find('#');
+        string name=line.substr(1,i-1);
+        string ID=line.substr(i+1,j-i-1);
+
+        if((searchType==1 && name==whatWeWant) || (searchType==2 && ID==whatWeWant)){
             print(line);
-            if(Record){;
+            found=true;
+
+        if(reportMode){
             AcademicRecord_score(line);
             cout<<"\n***************************************************\n";
-            }
-       }
-    }
-    if(!flag){ cout<<"No one was found with given name !\n";return;}
-}
-
-void searchbyID(){
-   ifstream students;
-    students.open("students.txt");
-    if(!students){
-        cout<<"\nError!.\nFile doesn't exist.";
-        return;
-    }
-    string IDToSearch,line;
-    cout<<"Enter ID to search:";
-    cin.ignore();
-    getline(cin,IDToSearch);
-    bool flag=false;
-    while(getline(students,line)){
-        int i=1+line.find('@');
-        string  ID="";
-        while(line[i]!='#'){
-            ID+=line[i];
-            i++;
-        }
-        if(ID==IDToSearch){
-            flag=true;
-            print(line);
-             if(Record){
-            AcademicRecord_score(line);
-            }
-    }
-    }
-    if(!flag){ cout<<"No one was found with given ID !\n";return;}
+          }
+      }
+  }
+    if(!found) { cout<<"No one was found with given ID !\n";return;}
 }
 
 void listAllStudents(){
@@ -340,7 +310,7 @@ void sort(vector<string> &sortline ,int count){
 
 void sortbyGrade(){
     ifstream students;
-    students.open("students.txt");
+    students.open("students.txt",ios::in);
     if(!students){
         cout<<"\nError!.\nFile doesn't exist.";
         return;
@@ -361,7 +331,7 @@ void sortbyGrade(){
 
 void sortbyMajor(){
       ifstream students;
-    students.open("students.txt");
+    students.open("students.txt",ios::in);
     if(!students){
         cout<<"\nError!.\nFile doesn't exist.";
         return;

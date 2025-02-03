@@ -247,7 +247,7 @@ void searchStudents(int searchType , bool reportMode){
     if(!found) { cout<<Red<<"No one was found with given ID !\n"<<Default;return;}
 }
 
-void listAllStudents(){
+void listStudents(){
     while(true){
     cout<<Green<<"\n\nPlease Choose an Option\n"<<Default;
     cout<<"1.Sorting by Grade. \n";

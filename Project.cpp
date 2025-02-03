@@ -18,7 +18,7 @@ void addStudent();
 void addCourse();
 void AcademicRecord();
 void searchStudents(int searchType ,bool reportMode);
-void listAllStudents();
+void listStudents();
 void AcademicRecord_score(string line);
 void sortbyGrade();
 void sortbyMajor();
